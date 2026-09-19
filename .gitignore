@@ -1,0 +1,7 @@
+build/
+.pio/
+*.o
+*.d
+*.bmp
+*.html.bak
+.DS_Store

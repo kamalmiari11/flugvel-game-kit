@@ -1,0 +1,32 @@
+name: check
+
+# Every push and every pull request runs exactly what `make check` runs
+# locally: the source lint, the test bench, and a strict scripted replay of
+# every game in the registry.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and check
+        run: make check
+
+      - name: Record a replay
+        if: always()
+        run: make replay || true
+
+      - name: Keep the filmstrip
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: replay
+          path: |
+            build/run.html
+            build/final.bmp
+          if-no-files-found: ignore

@@ -1,0 +1,23 @@
+# A short recorded run, used by `make replay` and by CI.
+#
+# Times are milliseconds on the device clock, so a script replays identically
+# on a fast laptop and a slow one: same seed + same script = same pixels.
+# Note that the replay stops early if the game calls exitGame().
+
+300   knob +2        # climb
+700   press          # burn a boost
+1200  knob -1
+1800  knob -2        # dive back down
+2400  press
+3000  shot playing   # keep this frame in the filmstrip
+3200  knob +3
+4000  knob -4        # into the floor - ends the run
+5200  shot gameover
+5600  press          # play again
+6500  theme 1        # switch palette mid-run: everything must repaint
+7200  knob +1
+8000  shot dark
+9000  knob -2
+11000 press
+13000 knob +2
+15000 shot late
