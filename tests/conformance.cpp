@@ -88,6 +88,15 @@ TEST(repaint_rebuilds_exactly_what_was_on_screen) {
         h.begin();
         Monkey().drive(h, 120);
 
+        // Let it settle before snapshotting. A game paces its own frames, so
+        // between one frame and the next there is legitimately state that has
+        // not been painted yet - a knob turn that arrives mid-frame is drawn
+        // on the next one, not instantly. Half a second of quiet calls closes
+        // that window for any sane frame interval, and the check below stays
+        // exactly as strict about what it is actually testing: that repaint()
+        // can rebuild the screen from state.
+        for (int i = 0; i < 8; i++) h.step(60);
+
         std::vector<uint16_t> before = playArea(h);
 
         gk::Rect p = h.play();

@@ -19,8 +19,15 @@ level up - so there is nothing to copy and nothing to keep in sync.
 
 It replaces whatever was on the device with this harness, and nothing else.
 The harness is not the product firmware: no Wi-Fi, no setup portal, no
-screens, no updates. It boots straight into the first game in
-`games/registry.cpp` and that is all it does.
+screens, no updates. It boots straight into the start screen
+(`games/welcome/`), the first entry in `games/registry.cpp`.
+
+That screen is the hardware check: it draws a border around the exact area a
+game may use, reports the knob and the button as you work them, beeps when
+you press, shows every colour in the current theme, and - the number worth
+looking at - how many milliseconds apart your game is actually being called.
+If all of that looks right, the device, the build and the toolchain are
+good.
 
 On boot you get the backlight on, the panel in landscape, a status bar with
 the game name and the current theme, the control legend along the bottom, and

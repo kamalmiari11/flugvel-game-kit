@@ -49,7 +49,12 @@ public:
         _in.fillRect(x, y, w, h, c);
     }
     void drawRect(int x, int y, int w, int h, gk::color_t c) override {
-        note("drawRect", x, y, w, h); _in.drawRect(x, y, w, h, c);
+        // An outline costs its perimeter, not its area. Charging the whole
+        // box made a border round the play area look like a full-screen
+        // fill, which would push any game that draws one straight through
+        // the frame budget for no reason.
+        note("drawRect", x, y, w, h, 2L * w + 2L * h);
+        _in.drawRect(x, y, w, h, c);
     }
     void drawPixel(int x, int y, gk::color_t c) override {
         note("drawPixel", x, y, 1, 1); _in.drawPixel(x, y, c);
@@ -62,14 +67,18 @@ public:
     }
     void drawLine(int x0, int y0, int x1, int y1, gk::color_t c) override {
         int x = x0 < x1 ? x0 : x1, y = y0 < y1 ? y0 : y1;
-        note("drawLine", x, y, (x0 > x1 ? x0 - x1 : x1 - x0) + 1, (y0 > y1 ? y0 - y1 : y1 - y0) + 1);
+        long dx = (x0 > x1 ? x0 - x1 : x1 - x0) + 1;
+        long dy = (y0 > y1 ? y0 - y1 : y1 - y0) + 1;
+        note("drawLine", x, y, (int)dx, (int)dy, dx > dy ? dx : dy);   // pixels, not the box
         _in.drawLine(x0, y0, x1, y1, c);
     }
     void fillCircle(int cx, int cy, int r, gk::color_t c) override {
         note("fillCircle", cx - r, cy - r, 2 * r + 1, 2 * r + 1); _in.fillCircle(cx, cy, r, c);
     }
     void drawCircle(int cx, int cy, int r, gk::color_t c) override {
-        note("drawCircle", cx - r, cy - r, 2 * r + 1, 2 * r + 1); _in.drawCircle(cx, cy, r, c);
+        // Circumference, generously rounded up - again, an outline.
+        note("drawCircle", cx - r, cy - r, 2 * r + 1, 2 * r + 1, 8L * r + 8);
+        _in.drawCircle(cx, cy, r, c);
     }
     void fillTriangle(int x0, int y0, int x1, int y1, int x2, int y2, gk::color_t c) override {
         int minx = x0 < x1 ? (x0 < x2 ? x0 : x2) : (x1 < x2 ? x1 : x2);
@@ -111,7 +120,10 @@ public:
     int fontHeight() const override { return _in.fontHeight(); }
 
 private:
-    void note(const char* op, int x, int y, int w, int h) {
+    // cost < 0 means "the whole rectangle", which is right for anything
+    // filled. Outlines pass their real pixel count instead; the rectangle is
+    // still used for the bounds check either way.
+    void note(const char* op, int x, int y, int w, int h, long cost = -1) {
         if (w <= 0 || h <= 0) return;
 
         // Clip to the panel first, because the driver does. Sending a sprite
@@ -125,8 +137,10 @@ private:
         if (y1 > _in.height()) y1 = _in.height();
         if (x1 <= x0 || y1 <= y0) return;          // entirely off-panel
 
-        _framePixels += (long)(x1 - x0) * (y1 - y0);
-        _totalPixels += (long)(x1 - x0) * (y1 - y0);
+        long clippedArea = (long)(x1 - x0) * (y1 - y0);
+        long charged = cost < 0 ? clippedArea : (cost < clippedArea ? cost : clippedArea);
+        _framePixels += charged;
+        _totalPixels += charged;
         if (!_watch) return;
 
         // What is left is on the glass. If any of it is outside the play area

@@ -16,8 +16,14 @@ if a game does something the device cannot afford.
 make run
 ```
 
-Open <http://127.0.0.1:8080/>. You are looking at the device. Arrow keys turn
-the knob, space is the button, and the buzzer plays through your speakers.
+Open <http://127.0.0.1:8080/>. You are looking at the device, running the
+start screen: it shows the area you may draw in, what the controls report,
+how often your game is actually called, and the theme's colours. Arrow keys
+turn the knob, space is the button, and the buzzer plays through your
+speakers.
+
+The same screen is what a device boots into, so plugging one in tells you
+straight away whether the hardware, the build and the toolchain are good.
 
 ```sh
 make test     # the test bench
@@ -36,15 +42,18 @@ Python, no Arduino toolchain (unless you were sent a unit - see
    different from desktop game work is in there.
 2. **[`docs/RULES.md`](docs/RULES.md)** - the rules a game must follow, each
    with the reason it exists and how it is checked. Short.
-3. **[`games/gaterun/`](games/gaterun/)** - the reference game. It is small,
-   complete, and does every awkward thing correctly. Read it next to the
-   rules.
-4. **[`docs/API.md`](docs/API.md)** - the full reference for everything you
+3. **[`games/welcome/`](games/welcome/)** - the start screen you are looking
+   at. The smallest complete example: fixed state, dirty-rect drawing, a
+   `repaint()` that rebuilds the screen, handlers that only set variables.
+4. **[`games/gaterun/`](games/gaterun/)** - the reference game. Small,
+   complete, and does every awkward thing correctly, sound included. Read it
+   next to the rules.
+5. **[`docs/API.md`](docs/API.md)** - the full reference for everything you
    can call.
-5. **[`games/template/`](games/template/)** - a skeleton that already builds
+6. **[`games/template/`](games/template/)** - a skeleton that already builds
    and runs. Start here.
-6. **[`BRIEF.md`](BRIEF.md)** - what you are actually being asked to build.
-7. **[`docs/DELIVERY.md`](docs/DELIVERY.md)** - what "done" means, and how
+7. **[`BRIEF.md`](BRIEF.md)** - what you are actually being asked to build.
+8. **[`docs/DELIVERY.md`](docs/DELIVERY.md)** - what "done" means, and how
    the work is reviewed.
 
 ## What is in the box
@@ -52,6 +61,7 @@ Python, no Arduino toolchain (unless you were sent a unit - see
 ```
 include/gamekit/     the contract: Game, Host, Gfx, Theme, Colors
 src/gamekit/         the palette
+games/welcome/       the start screen - what the device boots into
 games/gaterun/       reference game - read this
 games/template/      skeleton - start here
 games/registry.cpp   the list of games the sim and the device can run

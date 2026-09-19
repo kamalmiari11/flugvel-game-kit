@@ -9,7 +9,7 @@ OBJ       = $(BUILD)/obj
 BIN       = $(BUILD)/sim
 TESTBIN   = $(BUILD)/tests
 
-GAME ?= gaterun
+GAME ?= welcome      # first in the registry: the start screen
 PORT ?= 8080
 
 KIT_SRC  = $(wildcard src/gamekit/*.cpp)
@@ -29,6 +29,7 @@ help:
 	@echo "make test           build and run the test bench"
 	@echo "make lint           check the game sources against the house rules"
 	@echo "make replay         replay scripts/demo.input and write a filmstrip"
+	@echo "                    (try GAME=gaterun - the start screen barely moves)"
 	@echo "make check          lint + test + a strict replay: what CI runs"
 	@echo ""
 	@echo "GAME=$(GAME)   PORT=$(PORT)   (override on the command line)"
