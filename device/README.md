@@ -15,6 +15,33 @@ pio device monitor       # serial log
 The same game sources are compiled for both targets - `src_dir` points one
 level up - so there is nothing to copy and nothing to keep in sync.
 
+## What flashing this actually does
+
+It replaces whatever was on the device with this harness, and nothing else.
+The harness is not the product firmware: no Wi-Fi, no setup portal, no
+screens, no updates. It boots straight into the first game in
+`games/registry.cpp` and that is all it does.
+
+On boot you get the backlight on, the panel in landscape, a status bar with
+the game name and the current theme, the control legend along the bottom, and
+the game running between them. Then:
+
+| | |
+| --- | --- |
+| turn the knob | your game's `onKnob()` |
+| press the button | your game's `onButton()` |
+| press the knob in | next game in the registry |
+| press the knob **and** the button together | sound on / off |
+
+Best scores are kept in flash under their own namespace, one per game key, and
+survive a reflash. The serial monitor prints which game started and its stored
+best, and nothing else - the harness stays quiet so your own output is easy to
+see.
+
+Flashing the product firmware back over this restores the device completely;
+the two builds use the same flash layout, so nothing has to be erased in
+between.
+
 On the device:
 
 | Control | Does |
