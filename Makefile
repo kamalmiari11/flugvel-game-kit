@@ -21,13 +21,14 @@ SIM_OBJ  = $(patsubst %.cpp,$(OBJ)/%.o,$(KIT_SRC) $(GAME_SRC) $(SIM_SRC))
 # The tests bring their own main(), so the simulator's is left out of them.
 TEST_OBJ = $(patsubst %.cpp,$(OBJ)/%.o,$(KIT_SRC) $(GAME_SRC) $(filter-out sim/main.cpp,$(SIM_SRC)) $(TEST_SRC))
 
-.PHONY: all run sim test check lint replay clean help
+.PHONY: all run sim test check lint device-check replay clean help
 
 help:
 	@echo "make run            build and open the simulator on http://127.0.0.1:$(PORT)/"
 	@echo "make sim            build $(BIN) only"
 	@echo "make test           build and run the test bench"
 	@echo "make lint           check the game sources against the house rules"
+	@echo "make device-check    compile the hardware harness against stub headers"
 	@echo "make replay         replay scripts/demo.input and write a filmstrip"
 	@echo "                    (try GAME=gaterun - the start screen barely moves)"
 	@echo "make check          lint + test + a strict replay: what CI runs"
@@ -68,12 +69,20 @@ test: $(TESTBIN)
 lint:
 	@sh tests/lint.sh
 
+# Compiles the hardware harness against stub headers - seconds, no ESP32
+# toolchain. It catches API misuse, not linker or runtime problems; only
+# `cd device && pio run` proves the firmware actually builds.
+device-check:
+	@$(CXX) -std=c++17 -fsyntax-only -Wall -Wextra \
+	  -Idevice/hostcheck -Iinclude -Igames -Idevice -Idevice/src \
+	  device/src/main.cpp && echo "device target: API check passed"
+
 replay: $(BIN)
 	$(BIN) --game $(GAME) --script scripts/demo.input --duration 20000 \
 	       --record $(BUILD)/run.html --shot $(BUILD)/final.bmp
 	@echo "open $(BUILD)/run.html in a browser"
 
-check: lint test $(BIN)
+check: lint device-check test $(BIN)
 	@for g in $$($(BIN) --list | awk '{print $$1}'); do \
 	  echo "--- strict replay: $$g"; \
 	  $(BIN) --game $$g --script scripts/demo.input --duration 20000 --strict || exit 1; \

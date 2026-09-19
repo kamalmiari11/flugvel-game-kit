@@ -26,9 +26,10 @@ The same screen is what a device boots into, so plugging one in tells you
 straight away whether the hardware, the build and the toolchain are good.
 
 ```sh
-make test     # the test bench
-make lint     # the house rules, checked against your source
-make check    # both, plus a scripted replay - this is what CI runs
+make test           # the test bench
+make lint           # the house rules, checked against your source
+make device-check   # the hardware harness, compiled against stub headers
+make check          # all of it, plus a scripted replay - what CI runs
 ```
 
 No dependencies: a C++17 compiler and `make`. Nothing to install, no SDL, no

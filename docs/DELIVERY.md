@@ -7,8 +7,8 @@ review runs, so there should be no surprises.
 
 **It builds and passes, from a clean checkout**
 
-- [ ] `make check` is green - lint, the test bench, and a strict replay of
-      every game in the registry
+- [ ] `make check` is green - lint, the device API check, the test bench, and
+      a strict replay of every game in the registry
 - [ ] no compiler warnings (the build uses `-Wall -Wextra -Wshadow`)
 - [ ] the game is registered in `games/registry.cpp` and appears in
       `./build/sim --list`

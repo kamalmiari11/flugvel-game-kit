@@ -235,8 +235,11 @@ void setup() {
 }
 
 void loop() {
-    static long lastCount = 0;
-    static long accumulated = 0;
+    // int64_t because that is what the encoder library returns - narrowing it
+    // to long works today and is one of those truncations nobody remembers
+    // making.
+    static int64_t lastCount = 0;
+    static int64_t accumulated = 0;
     static uint32_t lastButtonAt = 0;
     static int lastButtonState = HIGH;
     static int lastKnobState = HIGH;
@@ -249,7 +252,7 @@ void loop() {
     host.serviceSound();
 
     // ---- knob rotation ----
-    long count = encoder.getCount();
+    int64_t count = encoder.getCount();
     accumulated += count - lastCount;
     lastCount = count;
     while (accumulated >= ENCODER_COUNTS_PER_DETENT) {
